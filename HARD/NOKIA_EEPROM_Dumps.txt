@@ -1,0 +1,21 @@
+Nokia 110 Finder (Text Finder)
+EEPROM: 24C16N
+
+00   : 41 :: Unknown
+01   : 60 :: Country code (6-Ukraine) + Area Coverage (0-Local) 
+
+02-04: 10 07 03 :: С1 BDC coded = 100703
+05-07: 19 99 99 :: С2 BDC coded = 199999
+08-0A: 19 99 99 :: С3 BDC coded = 119999
+0B-0D: 19 99 99 :: С4 BDC coded = 119999
+80-CF:          ::Logo ***********************   N O K I A  ******  FINDER TEXT *********************** 
+
+//=====================================================================================================
+
+Nokia Alpha TEXT
+EEPROM: 24C02
+
+00   : 60       :: Country code (6-Ukraine) + Area Coverage (0-Local) 
+01-03: 10 04 66 :: С1 BDC coded = 100466
+04-06: 10 04 66 :: С2 BDC coded = 100466
+
