@@ -747,7 +747,9 @@ Message.refined.pid = rds_pid; // PI Programm identification
 int RDSCounter = 0; // groups inside 24 symbols packet
 int psacCounter = 0; //
 bool AddressFlag = 1; // Set Flag to 1 for send addres group
+
 String Text = M_Text; // source text
+
 if (Text.length() == 0) {Text=" ";} //check for zero
 
 switch (Type) { //prepare counters and input string 
@@ -862,7 +864,7 @@ if (Monitor) {Serial.println();}
 psacCounter++; //next group
 } //End of NON ALPHA Message
 
-if (Type == ALPHA) // alpha messages
+if (Type == ALPHA) // alpha messages ----------------------------------------------------------- ALPHA
 {
 // Create and send address group 
 if (AddressFlag == 1) // check for address group
@@ -942,7 +944,7 @@ if (Monitor) {Serial.println();}
 
 if (psacCounter == 0xE) //last group for 24 symbols group
    {
-    psacCounter = 8; // reset psac for new 24 symbol group
+    psacCounter = 9; // reset psac for new 24 symbol group
    } 
 else
    {psacCounter++;} //next group

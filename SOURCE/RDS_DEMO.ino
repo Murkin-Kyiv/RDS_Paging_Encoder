@@ -1,5 +1,9 @@
-/* Paging LAB RDS Encoder V1 
- * 
+/* Paging LAB RDS Encoder V1.01
+
+ * Version List:
+ * - V1 - Start version
+ * - V1.01 - Fix bug with long text messages more than 24 symbols; fix bug with Tone Only Messsges *
+ *
  * Protocol description: https://en.wikipedia.org/wiki/Radio_Data_System
  * Datasheet: https://web.archive.org/web/20161020015638/http://www.nrscstandards.org/SG/nrsc-4-B.pdf
 
@@ -11,7 +15,7 @@
  * - Tone Only Messages
  * - 10 digits Numeric Messages - use ":" for space symbol
  * - 18 digits Numeric Messages - use ":" for space symbol
- * - Aplphanimeric - only 24 symbols (for messages longer than 24 characters there is a loss of synchronization, I haven't solution for fix this bug yet)
+ * - Aplphanimeric - up to 80 symbols
  * - Data and Time - Fixed. You can upgrade encdoder with any RTC module if you want. F.e. https://github.com/PaulStoffregen/DS1307RTC
  * - Monitor: turn ON for monitoring RDS packet sending
  * - Test message: ON/OFF; periodicaly send Numeric 10 digits format message
@@ -20,8 +24,8 @@
  * - National/International Mode: Work only in National mode, you need read Country code from EEPROM or try all countries from 1 to F
  * - Pager`s Adrress: The pager address can be found on the back cover. If it is missing, you will have to read it from EEPROM I2C 24C02.
  *
- *FaceBook group about paging: https://www.facebook.com/groups/116072934759380                    
-*/
+ * FaceBook group about paging: https://www.facebook.com/groups/116072934759380                    
+ */
 
 #include "si4713.h" //transmitter library
 
@@ -116,7 +120,7 @@ if (((millis() - G_7A_Counter) > Cfg_Base.cfg_Test_Message_Period) && (Cfg_Base.
    {
     ADflagInvert();
     Serial.println("Debug Messade>>" + Int2STR(G_7A_Counter, 10));
-    TX.RDS_7A_PAGING (Cfg_Base.cfg_pi.All, Cfg_Base.cfg_Bo, Cfg_Base.cfg_TP, Cfg_Base.cfg_PTY, Cfg_Base.cfg_7A_ADflag, DIG10, Cfg_Base.cfg_7A_Address, Int2STR(G_7A_Counter, 10), Cfg_Base.cfg_Monitor);
+    TX.RDS_7A_PAGING (Cfg_Base.cfg_pi.All, Cfg_Base.cfg_Bo, Cfg_Base.cfg_TP, Cfg_Base.cfg_PTY, Cfg_Base.cfg_7A_ADflag, DIG10, Cfg_Base.cfg_7A_Address, Int2STR(G_7A_Counter, 10), Cfg_Base.cfg_Monitor); 
     G_7A_Counter = millis();
    }
    
@@ -149,6 +153,7 @@ if (((millis() - G_2A_Counter) > Cfg_Base.cfg_2A_Period*1000)  && Cfg_Base.cfg_2
 
         ADflagInvert(); //set new message flag                
         TX.RDS_7A_PAGING (Cfg_Base.cfg_pi.All, Cfg_Base.cfg_Bo, Cfg_Base.cfg_TP, Cfg_Base.cfg_PTY, Cfg_Base.cfg_7A_ADflag, TONE, Cfg_Base.cfg_7A_Address, "AA", Cfg_Base.cfg_Monitor);
+        Serial.println("Tone Message>> Sent");
         break;
 
     case SEND_7A_NUM_10: //Send 10 Digits Numeric Message
@@ -166,7 +171,7 @@ if (((millis() - G_2A_Counter) > Cfg_Base.cfg_2A_Period*1000)  && Cfg_Base.cfg_2
     case SEND_7A_ALPHA: //Send debug RDS packet
         
         ADflagInvert(); //set new message flag                
-        TX.RDS_7A_PAGING (Cfg_Base.cfg_pi.All, Cfg_Base.cfg_Bo, Cfg_Base.cfg_TP, Cfg_Base.cfg_PTY, Cfg_Base.cfg_7A_ADflag, ALPHA, Cfg_Base.cfg_7A_Address, SetMessage ("Text Message [max=24]>"), Cfg_Base.cfg_Monitor);
+        TX.RDS_7A_PAGING (Cfg_Base.cfg_pi.All, Cfg_Base.cfg_Bo, Cfg_Base.cfg_TP, Cfg_Base.cfg_PTY, Cfg_Base.cfg_7A_ADflag, ALPHA, Cfg_Base.cfg_7A_Address, SetMessage ("Text Message [max=24]>"), Cfg_Base.cfg_Monitor); //Cfg_Base.cfg_Monitor
         break;
     
      case SHOW_STATUS: //Send debug RDS packet
@@ -337,7 +342,7 @@ String SetMessage(String Hint)
 String Date_Input = "Error";
 byte flag = 0;
 
-Serial.print (Hint + ">" );
+Serial.print (Hint + "> " );
   while (flag == 0)
   {
     if (Serial.available()) // waiting input data
